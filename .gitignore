@@ -1,51 +1,26 @@
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
 
-# Prerequisites
-*.d
+# Folder config file
+Desktop.ini
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
 
-# Precompiled Headers
-*.gch
-*.pch
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-#*.dll
+# Windows shortcuts
+*.lnk
 
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-#*.lib
-
-# Executables
-*.out
-*.app
-
-*.sdf
-*.ipch
-*.vbw
-**/ipch
-/ExeProj/**
-/opcodes.xlsx
-*.tlog
-*.log
-*.lastbuildstate
-*.pdb
-*.cache
-*.dca
-/test_app/cairo/cairo.dll
-/test_app/sqlite/sqlite3.dll
-*.intermediate.manifest
 *.exp
 *.lib
-*.tmp
+*.vbw
+/*.dll
+/*.bak
+
+*.exe
