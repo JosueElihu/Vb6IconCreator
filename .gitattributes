@@ -11,6 +11,7 @@
 *.exe binary
 *.dll binary
 *.frx binary
+*.ctx binary
 *.exp binary
 *.lib binary
 *.pdb binary
