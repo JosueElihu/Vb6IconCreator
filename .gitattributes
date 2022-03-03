@@ -17,6 +17,7 @@
 *.ctl    eol=crlf
 *.frm    eol=crlf
 *.txt    eol=crlf
+*.pag    eol=crlf
 *.vbp    eol=crlf
 
 # Standard to msysgit
