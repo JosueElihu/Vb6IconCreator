@@ -35,7 +35,7 @@ Dim i        As Long
     Import.OpenIconFile FileName
     For i = 0 To Import.IconCount - 1
         Set Bmp = Import.GdipBitmap(i)
-        Coll.Add Bmp
+        If Not Bmp Is Nothing Then Coll.Add Bmp
     Next
     Set Import = Nothing
     
@@ -67,16 +67,6 @@ Dim Export As cIconEntry
     Set Export = Nothing
 End Function
 
-
-Public Function PatchIconFile(ByVal FileName As String) As Boolean
-Dim Patch As cIconEntry
-    Set Patch = New cIconEntry
-    If Patch.OpenIconFile(FileName) Then
-        Call Patch.Truncate
-        PatchIconFile = Patch.OpenIconFile(FileName)
-    End If
-    Set Patch = Nothing
-End Function
 
 Public Function GdipBitmap_(Optional Source As Variant) As cGDIPBitmap
 On Error GoTo e

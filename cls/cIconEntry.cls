@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 '    Component  : cIconEntry
 '    Autor      : J. Elhiu
 '    Description: RW Icons File
-'    Modified   : 24/02/2021
+'    Modified   : 03/03/2022
 '---------------------------------------------------------------------------------------------------------------------
 ' Thanks to Leandro Ascierto: AlphaIcon && ClsSnapWebSite
 
@@ -73,9 +73,9 @@ Private Declare Function IsBadCodePtr Lib "kernel32" (ByVal lpfn As Long) As Lon
 Private Declare Function StrLen Lib "kernel32" Alias "lstrlenA" (ByVal lpString As Long) As Long
 Private Declare Function StrCpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As String, ByVal lpString2 As Long) As Long
 
-Private Declare Function DrawIconEx Lib "user32" (ByVal Hdc As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
+Private Declare Function DrawIconEx Lib "user32" (ByVal Hdc As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal HIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 Private Declare Function CreateIconFromResourceEx Lib "user32" (ByRef presbits As Any, ByVal dwResSize As Long, ByVal fIcon As Long, ByVal dwVer As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal Flags As Long) As Long
-Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
+Private Declare Function DestroyIcon Lib "user32" (ByVal HIcon As Long) As Long
 
 Private Type IconBytes
    Strm() As Byte
@@ -332,7 +332,7 @@ e:
     FreeLibrary hLibrary
 End Function
 
-Public Function Add(Image As cGDIPBitmap, Optional ByVal TruncateBitCount As Boolean = True) As Boolean
+Public Function Add(Image As cGDIPBitmap) As Boolean
 On Error GoTo e
 Dim mc      As Long
 
@@ -341,15 +341,8 @@ Dim mc      As Long
     ReDim Preserve m_IBytes(mc)
     m_IHeader.Count = mc + 1
     
-    
-    '/*     ATENCION    */
-    '----------------------------------------------------------------------------------------
-    ' TruncateBitCount deja la profundidad de bits de los iconos en cero
-    '----------------------------------------------------------------------------------------
-    If Not TruncateBitCount Then
-        m_IEntry(mc).BitCount = 32
-        m_IEntry(mc).Planes = 1
-    End If
+    m_IEntry(mc).BitCount = 32
+    m_IEntry(mc).Planes = 1
 
     If Image.Width < 256 Or Image.Height < 256 Then
         m_IEntry(mc).Width = Image.Width
@@ -363,40 +356,26 @@ Dim mc      As Long
 e:
 End Function
 
-
-Public Sub Truncate()
-On Error GoTo e
-Dim i As Long
-
-    ' Establecer profundidad de Bits de en 0
-    '-------------------------------------------
-    For i = 0 To m_IHeader.Count - 1
-        m_IEntry(i).BitCount = 0
-        m_IEntry(i).Planes = 0
-    Next
-e:
-End Sub
-
 Public Function GdipBitmap(ByVal Index As Long) As cGDIPBitmap
 On Error GoTo e
-Dim hIcon As Long
+Dim HIcon As Long
 
-    hIcon = CreateIconFromResourceEx(m_IBytes(Index).Strm(0), m_IEntry(Index).BytesInRes, 1, &H30000, m_IEntry(Index).Width, m_IEntry(Index).Height, &H0)
-    If hIcon Then
+    HIcon = CreateIconFromResourceEx(m_IBytes(Index).Strm(0), m_IEntry(Index).BytesInRes, 1, &H30000, m_IEntry(Index).Width, m_IEntry(Index).Height, &H0)
+    If HIcon Then
         Set GdipBitmap = New cGDIPBitmap
-        GdipBitmap.LoadImage hIcon
-        DestroyIcon hIcon
+        GdipBitmap.LoadImage HIcon
+        DestroyIcon HIcon
     End If
 e:
 End Function
 
 Public Sub DrawIcon(lHdc As Long, ByVal Index As Long, ByVal x As Long, ByVal y As Long, Optional ByVal lW As Long, Optional ByVal lH As Long)
 On Error GoTo e
-Dim hIcon As Long
-    hIcon = CreateIconFromResourceEx(m_IBytes(Index).Strm(0), m_IEntry(Index).BytesInRes, 1, &H30000, m_IEntry(Index).Width, m_IEntry(Index).Height, &H0)
-    If hIcon Then
-        DrawIconEx lHdc, x, y, hIcon, lW, lH, 0, 0, &H1 Or &H2
-        DestroyIcon hIcon
+Dim HIcon As Long
+    HIcon = CreateIconFromResourceEx(m_IBytes(Index).Strm(0), m_IEntry(Index).BytesInRes, 1, &H30000, m_IEntry(Index).Width, m_IEntry(Index).Height, &H0)
+    If HIcon Then
+        DrawIconEx lHdc, x, y, HIcon, lW, lH, 0, 0, &H1 Or &H2
+        DestroyIcon HIcon
     End If
 e:
 End Sub

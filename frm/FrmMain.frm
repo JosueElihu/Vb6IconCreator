@@ -56,7 +56,7 @@ Begin VB.Form FrmMain
       Top             =   4080
       _ExtentX        =   794
       _ExtentY        =   688
-      Count           =   11
+      Count           =   10
       Data_0          =   "FrmMain.frx":26438
       Data_1          =   "FrmMain.frx":26826
       Data_2          =   "FrmMain.frx":27AC1
@@ -67,7 +67,6 @@ Begin VB.Form FrmMain
       Data_7          =   "FrmMain.frx":2CFDF
       Data_8          =   "FrmMain.frx":2DA20
       Data_9          =   "FrmMain.frx":2F783
-      Data_10         =   "FrmMain.frx":31422
    End
    Begin VB.Menu mnu 
       Caption         =   "Archivo"
@@ -97,14 +96,6 @@ Begin VB.Form FrmMain
       Begin VB.Menu mnuFile 
          Caption         =   "Crear desde imagen"
          Index           =   5
-      End
-      Begin VB.Menu mnuFile 
-         Caption         =   "-"
-         Index           =   6
-      End
-      Begin VB.Menu mnuFile 
-         Caption         =   "Patch icon"
-         Index           =   7
       End
    End
    Begin VB.Menu mnu 
@@ -216,16 +207,14 @@ Dim i As Long
     PutIconToVBMenu Me.hWnd, MnuIcons(1), 0, 0
     PutIconToVBMenu Me.hWnd, MnuIcons(2), 1, 0
     PutIconToVBMenu Me.hWnd, MnuIcons(3), 2, 0
-    'PutIconToVBMenu Me.hWnd, MnuIcons(4), 3, 0
-    PutIconToVBMenu Me.hWnd, MnuIcons(10), 7, 0
-    
+
     PutIconToVBMenu Me.hWnd, MnuIcons(5), 0, 1
     PutIconToVBMenu Me.hWnd, MnuIcons(6), 1, 1
     PutIconToVBMenu Me.hWnd, MnuIcons(7), 3, 1
     PutIconToVBMenu Me.hWnd, MnuIcons(8), 4, 1
     PutIconToVBMenu Me.hWnd, MnuIcons(9), 12, 1
     
-    PutIconToVBMenu Me.hWnd, MnuIcons(11), 0, 2
+    PutIconToVBMenu Me.hWnd, MnuIcons(10), 0, 2
     imlMnu.Clear
     
     If Command <> vbNullString Then
@@ -346,15 +335,6 @@ Dim Cmmdlg     As cDialog
             If lst.ListCount Then lst.ListIndex = 0
             Changed = True
             
-        Case 7 '/* Patch */
-        
-            Set Cmmdlg = New cDialog
-            Cmmdlg.Title = "Patch icon file"
-            Cmmdlg.Filter = "Iconos|*.ico|Todos los archivos|*.*"
-            If Not Cmmdlg.ShowOpen(Me.hWnd) Then Exit Sub
-            If Not PatchIconFile(Cmmdlg.FileName) Then MsgBox "¡Ocurrió un error al parchar el icono!", vbCritical Else _
-                MsgBox "¡Se ha modificado la profundidad de bits del icono!", vbInformation
-        
     End Select
 End Sub
 Private Sub mnuBmp_Click(Index As Integer)

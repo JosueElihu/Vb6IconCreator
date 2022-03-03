@@ -30,7 +30,7 @@ Attribute VB_Exposed = False
 '=====================================================================================================================
 '    Component  : JImageListEx
 '    Autor      : J. Elihu
-'    Modified   : 1.9.5 - 26/02/2022
+'    Modified   : 1.9.6 - 03/03/2022
 '=====================================================================================================================
 
 Option Explicit
@@ -45,18 +45,18 @@ End Type
 Private Type PICTDESC
   Size     As Long
   Type     As Long
-  hImage   As Long
+  hBmp   As Long
   Data1    As Long
   Data2    As Long
 End Type
 
 '/* GDI+    */
-Private Declare Function GdipDrawImageRectRectI Lib "GdiPlus" (ByVal graphics As Long, ByVal hImage As Long, ByVal DstX As Long, ByVal DstY As Long, ByVal DstWidth As Long, ByVal DstHeight As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal Callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
-Private Declare Function GdipSetInterpolationMode Lib "GdiPlus" (ByVal graphics As Long, ByVal InterpolationMode As Long) As Long
-Private Declare Function GdipSetPixelOffsetMode Lib "GdiPlus" (ByVal graphics As Long, ByVal PixelOffSetMode As Long) As Long
+Private Declare Function GdipDrawImageRectRectI Lib "GdiPlus" (ByVal Graphics As Long, ByVal hImage As Long, ByVal DstX As Long, ByVal DstY As Long, ByVal DstWidth As Long, ByVal DstHeight As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal Callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
+Private Declare Function GdipSetInterpolationMode Lib "GdiPlus" (ByVal Graphics As Long, ByVal InterpolationMode As Long) As Long
+Private Declare Function GdipSetPixelOffsetMode Lib "GdiPlus" (ByVal Graphics As Long, ByVal PixelOffsetMode As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "GdiPlus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
-Private Declare Function GdipCreateFromHDC Lib "GdiPlus" (ByVal Hdc As Long, ByRef graphics As Long) As Long
-Private Declare Function GdipDeleteGraphics Lib "GdiPlus" (ByVal graphics As Long) As Long
+Private Declare Function GdipCreateFromHDC Lib "GdiPlus" (ByVal hDC As Long, ByRef Graphics As Long) As Long
+Private Declare Function GdipDeleteGraphics Lib "GdiPlus" (ByVal Graphics As Long) As Long
 Private Declare Function GdipLoadImageFromFile Lib "GdiPlus" (ByVal FileName As Long, ByRef Image As Long) As Long
 Private Declare Function GdiplusStartup Lib "GdiPlus" (ByRef token As Long, ByRef lpInput As Long, Optional ByRef lpOutput As Any) As Long
 Private Declare Function GdiplusShutdown Lib "GdiPlus" (ByVal token As Long) As Long
@@ -71,9 +71,9 @@ Private Declare Function GdipSaveImageToStream Lib "GdiPlus" (ByVal Image As Lon
 Private Declare Function GdipGetImageGraphicsContext Lib "GdiPlus" (ByVal Image As Long, hGraphics As Long) As Long
 Private Declare Function GdipDrawImageRect Lib "GdiPlus.dll" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal mX As Single, ByVal mY As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
 Private Declare Function GdipCreateHBITMAPFromBitmap Lib "GdiPlus" (ByVal BITMAP As Long, ByRef hbmReturn As Long, ByVal Background As Long) As Long
-Private Declare Function GdipRotateWorldTransform Lib "GdiPlus" (ByVal graphics As Long, ByVal Angle As Single, ByVal Order As Long) As Long
-Private Declare Function GdipTranslateWorldTransform Lib "GdiPlus" (ByVal graphics As Long, ByVal dx As Single, ByVal dy As Single, ByVal Order As Long) As Long
-Private Declare Function GdipSetSmoothingMode Lib "GdiPlus" (ByVal graphics As Long, ByVal SmoothingMd As Long) As Long
+Private Declare Function GdipRotateWorldTransform Lib "GdiPlus" (ByVal Graphics As Long, ByVal Angle As Single, ByVal Order As Long) As Long
+Private Declare Function GdipTranslateWorldTransform Lib "GdiPlus" (ByVal Graphics As Long, ByVal dx As Single, ByVal dy As Single, ByVal Order As Long) As Long
+Private Declare Function GdipSetSmoothingMode Lib "GdiPlus" (ByVal Graphics As Long, ByVal SmoothingMd As Long) As Long
 
 Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Any, ByVal fDeleteOnRelease As Long, ppstm As Any) As Long
 Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpszProgID As Long, pCLSID As Any) As Long
@@ -86,9 +86,9 @@ Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal length As Long)
 
 '/* DPI */
-Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal Hdc As Long, ByVal nIndex As Long) As Long
+Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal Hdc As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
 
 Private Declare Function OleCreatePictureIndirect Lib "olepro32" (lpPictDesc As PICTDESC, riid As GUID, ByVal fPictureOwnsHandle As Long, IPic As IPicture) As Long
@@ -109,7 +109,7 @@ Private m_Item()    As ImlxData
 
 '/* PreservePropCase */
 #If False Then
-   Private hIcon, hBitmap
+   Private HIcon, HBitmap
 #End If
 
 Private Sub UserControl_Initialize()
@@ -208,7 +208,7 @@ On Error GoTo e
 e:
 End Property
 
-Property Get Stream(ByVal Index As Long, Optional ByVal W As Long, Optional H As Long, Optional lColor As Long = -1, Optional ByVal Alpha As Long = 100, Optional ByVal dpiAware As Boolean = True) As Byte()
+Property Get Stream(ByVal Index As Long, Optional ByVal W As Long, Optional ByVal H As Long, Optional lColor As Long = -1, Optional ByVal Alpha As Long = 100, Optional ByVal dpiAware As Boolean = True) As Byte()
 On Error GoTo e
 Dim lBmpSrc As Long
 Dim lBmp    As Long
@@ -239,7 +239,7 @@ Dim mxColor As Matrix_
     If lBmp Then GdipDisposeImage lBmp
 e:
 End Property
-Property Get hBitmap(ByVal Index As Long, Optional ByVal W As Long, Optional H As Long, Optional lColor As Long = -1, Optional ByVal Alpha As Long = 100, _
+Property Get HBitmap(ByVal Index As Long, Optional ByVal W As Long, Optional ByVal H As Long, Optional lColor As Long = -1, Optional ByVal Alpha As Long = 100, _
                     Optional ByVal BackColor As Long = -1, Optional ByVal dpiAware As Boolean = True) As Long
 On Error GoTo e
 Dim eGuid   As GUID
@@ -260,14 +260,14 @@ Dim mxColor  As Matrix_
     If Not mvGetResizedBmp(W, H, lBmpSrc, lW, lH, lBmp, mxColor) Then Exit Property
     
     If BackColor = -1 Then BackColor = 0 Else BackColor = RGBtoARGB(BackColor, 100)
-    GdipCreateHBITMAPFromBitmap lBmp, hBitmap, 0
+    GdipCreateHBITMAPFromBitmap lBmp, HBitmap, BackColor
     
     If lBmpSrc Then GdipDisposeImage lBmpSrc
     If lBmp Then GdipDisposeImage lBmp
 e:
 End Property
 
-Property Get Picture(ByVal Index As Long, Optional ByVal W As Long, Optional H As Long, Optional lColor As Long = -1, Optional ByVal Alpha As Long = 100, _
+Property Get Picture(ByVal Index As Long, Optional ByVal W As Long, Optional ByVal H As Long, Optional lColor As Long = -1, Optional ByVal Alpha As Long = 100, _
                      Optional ByVal BackColor As Long = -1, Optional ByVal PicType As PictureTypeConstants = vbPicTypeBitmap, Optional ByVal dpiAware As Boolean = True) As StdPicture
 On Error GoTo e
 Dim ePic    As PICTDESC
@@ -275,8 +275,8 @@ Dim eGuid   As GUID
     
     With ePic
         .Size = Len(ePic)
-        .Type = vbPicTypeBitmap
-        .hImage = IIf(PicType = vbPicTypeIcon, hIcon(Index, W, H, lColor, Alpha, dpiAware), hBitmap(Index, W, H, lColor, Alpha, BackColor, dpiAware))
+        .Type = PicType
+        .hBmp = IIf(PicType = vbPicTypeIcon, HIcon(Index, W, H, lColor, Alpha, dpiAware), HBitmap(Index, W, H, lColor, Alpha, BackColor, dpiAware))
     End With
     With eGuid
        .Data1 = &H20400
@@ -287,7 +287,7 @@ Dim eGuid   As GUID
 e:
 End Property
 
-Property Get hIcon(ByVal Index As Long, Optional ByVal W As Long, Optional H As Long, Optional lColor As Long = -1, Optional ByVal Alpha As Long = 100, Optional ByVal dpiAware As Boolean = True) As Long
+Property Get HIcon(ByVal Index As Long, Optional ByVal W As Long, Optional ByVal H As Long, Optional lColor As Long = -1, Optional ByVal Alpha As Long = 100, Optional ByVal dpiAware As Boolean = True) As Long
 Dim lBmpSrc As Long
 Dim lBmp    As Long
 Dim lW      As Single
@@ -306,7 +306,7 @@ Dim mxColor As Matrix_
     mvSetupMatrixColor mxColor, lColor, Alpha
     If Not mvGetResizedBmp(W, H, lBmpSrc, lW, lH, lBmp, mxColor) Then Exit Property
 
-    Call GdipCreateHICONFromBitmap(lBmp, hIcon)
+    Call GdipCreateHICONFromBitmap(lBmp, HIcon)
     If lBmpSrc Then GdipDisposeImage lBmpSrc
     If lBmp Then GdipDisposeImage lBmp
     
@@ -314,7 +314,7 @@ Dim mxColor As Matrix_
 ResourceEx_:
     Dim Out() As Byte
     Out = Me.Stream(Index, W, H, lColor, Alpha, dpiAware)
-    hIcon = CreateIconFromResourceEx(Out(0), UBound(Out) + 1&, 1&, &H30000, 0&, 0&, 0&)
+    HIcon = CreateIconFromResourceEx(Out(0), UBound(Out) + 1&, 1&, &H30000, 0&, 0&, 0&)
 End Property
 Public Sub Clear(): Erase m_Item: End Sub
 
@@ -454,19 +454,27 @@ End Sub
 
 'TODO: Private Subs
 '=====================================================================================================================
-Private Function mvLoadImage(hBitmap As Long, Index As Long, lW As Single, lH As Single) As Boolean
+Private Function mvLoadImage(HBitmap As Long, Index As Long, lW As Single, lH As Single) As Boolean
 On Error GoTo e
 Dim IStream   As IUnknown
 
     Set IStream = pvStreamFromArray(VarPtr(m_Item(Index).Strm(0)), UBound(m_Item(Index).Strm) + 1&)
     If Not IStream Is Nothing Then
-        mvLoadImage = (GdipLoadImageFromStream(IStream, hBitmap) = 0)
+        mvLoadImage = (GdipLoadImageFromStream(IStream, HBitmap) = 0)
     End If
     Set IStream = Nothing
-    If mvLoadImage Then GdipGetImageDimension hBitmap, lW, lH
+    If mvLoadImage Then GdipGetImageDimension HBitmap, lW, lH
 e:
 End Function
+Private Function mvCheckSizes(lSrcW As Single, lSrcH As Single, lNewW As Long, lNewH As Long, dpiAware As Boolean) As Boolean
+Dim lW      As Single
+Dim lH      As Single
 
+    If dpiAware Then lNewW = lNewW * dpi_: lNewH = lNewH * dpi_
+    If lNewW = 0 Then lNewW = lSrcW
+    If lNewH = 0 Then lNewH = lSrcH
+    
+End Function
 Private Function mvGetResizedBmp(W As Long, H As Long, SrcBmp As Long, ByVal lW As Long, ByVal lH As Long, OutBmp As Long, mxColor As Matrix_) As Boolean
 Dim mxGray   As Matrix_
 Dim hGrphc   As Long
@@ -523,13 +531,13 @@ Private Sub mvSetupMatrixColor(mxColor As Matrix_, lColor As Long, mxAlpha As Lo
     End With
 End Sub
 Private Function mvWindowsDPI() As Double
-Dim Hdc  As Long
+Dim hDC  As Long
 Dim lPx  As Double
 Const LOGPIXELSX As Long = 88
 
-    Hdc = GetDC(0)
-    lPx = CDbl(GetDeviceCaps(Hdc, LOGPIXELSX))
-    ReleaseDC 0, Hdc
+    hDC = GetDC(0)
+    lPx = CDbl(GetDeviceCaps(hDC, LOGPIXELSX))
+    ReleaseDC 0, hDC
     If (lPx = 0) Then mvWindowsDPI = 1# Else mvWindowsDPI = lPx / 96#
     
 End Function
